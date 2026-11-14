@@ -1,43 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SnippetCard } from './components/SnippetCard';
 import { SnippetForm, type NewSnippetData } from './components/SnippetForm';
 
-const initialSnippets = [
-  {
-    id: '1',
-    title: 'Fetch data in React',
-    language: 'TypeScript',
-    code: 'useEffect(() => {fetch("/api").then(...)}, []);',
-  },
-  {
-    id: '2',
-    title: 'SQL: Select all',
-    language: 'SQL',
-    code: 'SELECT * FROM users',
-  },
-  {
-    id: '3',
-    title: 'Docker build',
-    language: 'Bash',
-    code: 'docker build -t my-app.',
-  },
-  
-];
+interface Snippet {
+  id: string;
+  title: string;
+  language: string;
+  code: string;
+  description: string | null;
+  tags: string[];
+  createAt: string;
+}
 
 function App() {
-  const [snippets, setSnippets] = useState(initialSnippets);
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleDelete = (id: string) => {
+  useEffect(() => {
+    fetch('/api/snippets')
+    .then((res) => res.json())
+    .then((data) => {
+      setSnippets(data);
+      setIsLoading(false);
+    })
+    .catch((err) => {
+      console.error('Error loading', err);
+      setIsLoading(false);
+    });
+  }, []);
+
+  const handleDelete = async (id: string) => {
     setSnippets(snippets.filter((s) => s.id !== id));
   };
 
-  const handleAdd = (newData: NewSnippetData) => {
-    const newSnippet = {
-      id: Date.now().toString(),
-      ...newData,
-    };
-    setSnippets([newSnippet, ...snippets]);
+  const handleAdd = async (newData: NewSnippetData) => {
+    const res = await fetch ('/api/snippets', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(newData),
+    });
+
+    if (res.ok) {
+      const createdSnipped = await res.json();
+      setSnippets([createdSnipped, ...snippets]);
+    } else {
+      alert ('Error creating snippet');
+    }
   };
+
+  if (isLoading) {
+    return <div className='p-8 text-center'>Loading...</div>
+  }
 
   return (
     <div className='min-h-screen bg-gray-50 p-8'>

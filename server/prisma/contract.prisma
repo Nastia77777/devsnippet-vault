@@ -1,0 +1,11 @@
+// use prisma-8
+
+model Snippet {
+  id String @id @onCreate(cuid(2))
+  title       String
+  language    String
+  code        String
+  description String?
+  tags        String[]
+  createdAt   DateTime @default(now())
+}
