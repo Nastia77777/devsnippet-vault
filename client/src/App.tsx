@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { SnippetCard } from './components/SnippetCard';
+import { SnippetForm, type NewSnippetData } from './components/SnippetForm';
 
-const mockSnippets = [
+const initialSnippets = [
   {
     id: '1',
     title: 'Fetch data in React',
@@ -23,9 +25,18 @@ const mockSnippets = [
 ];
 
 function App() {
+  const [snippets, setSnippets] = useState(initialSnippets);
+
   const handleDelete = (id: string) => {
-    console.log(`Delete snippet from ID: ${id}`);
-    alert(`Snippet ${id} be deleted`);
+    setSnippets(snippets.filter((s) => s.id !== id));
+  };
+
+  const handleAdd = (newData: NewSnippetData) => {
+    const newSnippet = {
+      id: Date.now().toString(),
+      ...newData,
+    };
+    setSnippets([newSnippet, ...snippets]);
   };
 
   return (
@@ -34,8 +45,10 @@ function App() {
         DevSnippet Vault
       </h1>
 
+      <SnippetForm onAdd={handleAdd} />
+
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {mockSnippets.map((snippet) => (
+        {snippets.map((snippet) => (
           <SnippetCard
           key={snippet.id}
           title={snippet.title}
