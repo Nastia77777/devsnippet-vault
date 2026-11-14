@@ -41,6 +41,20 @@ app.post('/api/snippets', async (req, res) => {
   }
 });
 
+
+app.delete('/api/snippets/:id', async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    await db.orm.public.Snippet.where({ id }).delete();
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({error: 'Failed to delete snippet'});
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

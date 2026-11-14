@@ -30,7 +30,15 @@ function App() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    setSnippets(snippets.filter((s) => s.id !== id));
+    const res = await fetch(`/api/snippets/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (res.ok) {
+      setSnippets(snippets.filter((s) => s.id !== id));
+    } else {
+      alert ('Deleting error');
+    }
   };
 
   const handleAdd = async (newData: NewSnippetData) => {
