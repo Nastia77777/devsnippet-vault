@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { SnippetCard } from './components/SnippetCard';
 import { SnippetForm, type NewSnippetData } from './components/SnippetForm';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface Snippet {
   id: string;
@@ -15,6 +23,7 @@ interface Snippet {
 function App() {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/snippets')
@@ -51,6 +60,7 @@ function App() {
     if (res.ok) {
       const createdSnipped = await res.json();
       setSnippets([createdSnipped, ...snippets]);
+      setIsDialogOpen(false);
     } else {
       alert ('Error creating snippet');
     }
@@ -66,7 +76,15 @@ function App() {
         DevSnippet Vault
       </h1>
 
-      <SnippetForm onAdd={handleAdd} />
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger render={<Button>Add New Snippet</Button>} />
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Create New Snippet</DialogTitle>
+          </DialogHeader>
+          <SnippetForm onAdd={handleAdd} />
+        </DialogContent>
+      </Dialog>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {snippets.map((snippet) => (
