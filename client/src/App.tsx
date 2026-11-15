@@ -24,16 +24,21 @@ function App() {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/snippets')
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch');
+      return res.json();
+    })
     .then((data) => {
       setSnippets(data);
       setIsLoading(false);
     })
     .catch((err) => {
       console.error('Error loading', err);
+      setError('Cant download snippet. Try later.')
       setIsLoading(false);
     });
   }, []);
@@ -67,12 +72,25 @@ function App() {
   };
 
   if (isLoading) {
-    return <div className='p-8 text-center'>Loading...</div>
+    return (
+      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+        <div className='text-xl text-gray-600'>Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+        <div className='text-xl text-gray-600'>{error}</div>
+      </div>
+    );
   }
 
   return (
     <div className='min-h-screen bg-gray-50 p-8'>
-      <h1 className='text-3xl font-bold text-gray-900 mb-8'>
+      <div className='flex justify-between items-center mb-8'>
+      <h1 className='text-3xl font-bold text-gray-900'>
         DevSnippet Vault
       </h1>
 
@@ -85,8 +103,15 @@ function App() {
           <SnippetForm onAdd={handleAdd} />
         </DialogContent>
       </Dialog>
+      </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+      {snippets.length === 0 ? (
+        <div className='text-center py-20 text-gray-500'>
+          <p className='text-xl mb-4'>No snipped found</p>
+          <p>Click "Add New Snippet" to create your first one!</p>
+        </div>
+      ) : (
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {snippets.map((snippet) => (
           <SnippetCard
           key={snippet.id}
@@ -97,7 +122,8 @@ function App() {
           onDelete={() => handleDelete(snippet.id)}
           />
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
