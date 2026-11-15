@@ -1,5 +1,6 @@
 import express from 'express';
 import { db } from './prisma/db';
+import { createSnippetSchema } from './schemas';
 
 const app = express();
 const PORT = 3001;
@@ -20,15 +21,16 @@ app.get('/api/snippets', async (req, res) => {
 
 app.post('/api/snippets', async (req, res) => {
   try {
-    const { title, language, code, description, tags } = req.body;
-    
-    if (!title || !language || !code) {
-      return res.status(400).json({ error: 'Title, language and code are required' });
+    const parsed = createSnippetSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ errors: parsed.error.issues });
     }
 
-    const processedTags = tags 
-    ? [...new Set(tags.map((t: string) => t.trim().toLowerCase()).filter(Boolean))]
-    : [];
+    const { title, language, code, description, tags } = parsed.data;
+
+    const processedTags = tags
+      ? ([...new Set(tags.map((t: string) => t.trim().toLowerCase()).filter(Boolean))] as string[]) // <-- Додано as string[]
+      : [];
 
     const snippet = await db.orm.public.Snippet.create({
       title,
@@ -45,17 +47,16 @@ app.post('/api/snippets', async (req, res) => {
   }
 });
 
-
 app.delete('/api/snippets/:id', async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
 
     await db.orm.public.Snippet.where({ id }).delete();
 
     res.status(204).send();
   } catch (error) {
     console.error(error);
-    res.status(500).json({error: 'Failed to delete snippet'});
+    res.status(500).json({ error: 'Failed to delete snippet' });
   }
 });
 
