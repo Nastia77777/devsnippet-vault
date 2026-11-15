@@ -5,10 +5,11 @@ interface SnippetCardProps {
     title: string;
     language: string;
     code: string;
+    tags: string[];
     onDelete: () => void;
 }
 
-export function SnippetCard({title, language, code, onDelete}: SnippetCardProps) {
+export function SnippetCard({title, language, code, tags, onDelete}: SnippetCardProps) {
 
     const [isCopied, setIsCopied] = useState(false);
     
@@ -30,6 +31,16 @@ export function SnippetCard({title, language, code, onDelete}: SnippetCardProps)
                 <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
                 <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded">{language}</span>
             </div>
+
+            {tags && tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                    {tags.map(tag => (
+                        <span key={tag} className="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                            {tag}
+                        </span>
+                    ))}
+                </div>
+            )}
 
             <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
                 <code>{code}</code>

@@ -75,6 +75,7 @@ function App() {
           title={snippet.title}
           language={snippet.language}
           code={snippet.code}
+          tags={snippet.tags}
           onDelete={() => handleDelete(snippet.id)}
           />
         ))}

@@ -6,6 +6,7 @@ export interface NewSnippetData{
     language: string;
     code: string;
     description: string;
+    tags: string[];
 }
 
 interface SnippetFormProps {
@@ -17,6 +18,7 @@ export function SnippetForm({onAdd}: SnippetFormProps) {
     const[language, setLanguage] = useState("");
     const[code, setCode] = useState("");
     const[description, setDescription] = useState("");
+    const[tagsInput, setTagsInput] = useState("");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,12 +28,15 @@ export function SnippetForm({onAdd}: SnippetFormProps) {
             return;
         }
 
-        onAdd({title, language, code, description});
+        const tags = tagsInput.split(",").map(t => t.trim()).filter(Boolean);
+
+        onAdd({title, language, code, description, tags});
 
         setTitle("");
         setLanguage("");
         setCode("");
         setDescription("");
+        setTagsInput("");
     };
 
     return(
@@ -46,6 +51,7 @@ export function SnippetForm({onAdd}: SnippetFormProps) {
                 onChange={(e) => setTitle(e.target.value)}
                 className="border p-2 rounded w-full" 
                 />
+
                 <input 
                 type="text"
                 placeholder="Language (required)"
@@ -66,6 +72,14 @@ export function SnippetForm({onAdd}: SnippetFormProps) {
             placeholder="Code (optional)"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            className="border p-2 rounded w-full"
+            />
+
+            <input 
+            type="text"
+            placeholder="Tags (comma separated, e.g. react, api, ui)"
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
             className="border p-2 rounded w-full"
             />
 

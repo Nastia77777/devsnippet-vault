@@ -20,18 +20,22 @@ app.get('/api/snippets', async (req, res) => {
 
 app.post('/api/snippets', async (req, res) => {
   try {
-    const { title, language, code, description } = req.body;
+    const { title, language, code, description, tags } = req.body;
     
     if (!title || !language || !code) {
       return res.status(400).json({ error: 'Title, language and code are required' });
     }
+
+    const processedTags = tags 
+    ? [...new Set(tags.map((t: string) => t.trim().toLowerCase()).filter(Boolean))]
+    : [];
 
     const snippet = await db.orm.public.Snippet.create({
       title,
       language,
       code,
       description: description || null,
-      tags: []
+      tags: processedTags
     });
     
     res.status(201).json(snippet);
