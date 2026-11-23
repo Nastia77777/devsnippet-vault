@@ -9,6 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useTheme } from './hooks/useTheme';
+import { Moon, Sun } from 'lucide-react';
 
 interface Snippet {
   id: string;
@@ -21,6 +23,7 @@ interface Snippet {
 }
 
 function App() {
+  const { isDark, setIsDark } = useTheme();
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -87,27 +90,37 @@ function App() {
     );
   }
 
-  return (
-    <div className='min-h-screen bg-gray-50 p-8'>
+   return (
+    <div className='min-h-screen bg-gray-50 dark:bg-gray-950 p-8 transition-colors duration-300'>
       <div className='flex justify-between items-center mb-8'>
-      <h1 className='text-3xl font-bold text-gray-900'>
-        DevSnippet Vault
-      </h1>
+        <h1 className='text-3xl font-bold text-gray-900 dark:text-gray-100'>
+          DevSnippet Vault
+        </h1>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger render={<Button>Add New Snippet</Button>} />
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Create New Snippet</DialogTitle>
-          </DialogHeader>
-          <SnippetForm onAdd={handleAdd} />
-        </DialogContent>
-      </Dialog>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => setIsDark(!isDark)}
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger render={<Button>Add New Snippet</Button>} />
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Create New Snippet</DialogTitle>
+              </DialogHeader>
+              <SnippetForm onAdd={handleAdd} />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {snippets.length === 0 ? (
-        <div className='text-center py-20 text-gray-500'>
-          <p className='text-xl mb-4'>No snipped found</p>
+        <div className='text-center py-20 text-gray-500 dark:text-gray-400'>
+          <p className='text-xl mb-4'>No snippets found</p>
           <p>Click "Add New Snippet" to create your first one!</p>
         </div>
       ) : (
