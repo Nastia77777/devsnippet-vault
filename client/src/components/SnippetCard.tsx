@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {Button} from '@/components/ui/button';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const getLanguageColor = (language: string) => {
     const lang = language.toLowerCase();
@@ -59,9 +61,21 @@ export function SnippetCard({title, language, code, tags, onDelete}: SnippetCard
                 </div>
             )}
 
-            <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-                <code>{code}</code>
-            </pre>
+            <div className="rounded overflow-hidden">
+                <SyntaxHighlighter 
+                language={language.toLowerCase()}
+                style={vscDarkPlus}
+                customStyle={{
+                    margin: 0,
+                    padding: '1rem',
+                    fontSize: '0.875rem',
+                    borderRadius: '0.5rem',
+                }}
+                >
+                    {code}
+                </SyntaxHighlighter>
+
+            </div>
 
             <div className="flex gap-2 mt-2">
                 <Button
