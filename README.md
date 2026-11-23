@@ -13,43 +13,53 @@ A full-stack web application for storing and organizing code snippets.
 
 - `/client` — React frontend
 - `/server` — Express backend
-- `/` — root package.json with npm workspaces
+- `/` — root `package.json` with npm workspaces
 
 ## Setup & Running
 
 ### Prerequisites
+
 - Node.js (v20.19+ or v22+)
 - npm (v10+)
 
 ### 1. Clone the repository
+
+```bash
 git clone <your-repo-url>
 cd devsnippet-vault
-
-text
+```
 
 ### 2. Install dependencies
-From the root directory:
-npm install
 
-text
+From the root directory:
+
+```bash
+npm install
+```
 
 ### 3. Set up the database
-1. Create a `.env` file in the `/server` directory with your PostgreSQL connection string:
-DATABASE_URL="postgresql://..."
 
-text
-2. Generate the Prisma contract and create the database table:
+Create a `.env` file in the `/server` directory with your PostgreSQL connection string:
+
+```text
+DATABASE_URL="postgresql://..."
+```
+
+Generate the Prisma contract and create the database table:
+
+```bash
 cd server
 npx prisma contract emit
 npx prisma db init
-
-text
+```
 
 ### 4. Run the application
-From the root directory:
-npm run dev
 
-text
+From the root directory:
+
+```bash
+npm run dev
+```
 
 This will start both the client (on `http://localhost:5173`) and the server (on `http://localhost:3001`).
 
